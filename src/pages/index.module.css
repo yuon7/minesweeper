@@ -8,6 +8,34 @@
   padding: 0 0.5rem;
 }
 
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  width: 270px;
+  height: 270px;
+  background-color: rgb(136 136 136);
+}
+
+.picture {
+  width: 30px;
+  height: 30px;
+  background: url('~/assets/images/icons.png');
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  border: solid 1px rgb(85 85 85);
+  background: url('~/assets/images/icons.png') no-repeat;
+  background-position: -60px;
+}
+
+.stone {
+  width: 30px;
+  height: 30px;
+  box-shadow: 0.1px 0.3px 5px 0.1px;
+}
+
 .main {
   display: flex;
   flex: 1;
