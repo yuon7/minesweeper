@@ -17,23 +17,10 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  //以下はボムの場所を決める際のボード
-  //0 ボムあり
-  //1 ボムなし
-  const bombCount = 10;
   const [bombMap, setBombMap] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
-  //セットボードは計算値であるが一時的に状態地にしている
-  const [board, setboard] = useState<(0 | 1 | 2 | 3)[][]>([
+    //以下はボムの場所を決める際のボード
+    //0 ボムなし
+    //1 ボムあり
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -46,8 +33,19 @@ const Home = () => {
   ]);
   const clickCell = (x: number, y: number) => {
     console.log(x, y);
-    const newBoard = JSON.parse(JSON.stringify(userInputs));
+    const newBombMap = JSON.parse(JSON.stringify(bombMap));
+    for (let count = 1; count < 11; count += 1) {}
+    //以下はボムの場所を決める際のボード
+    //0 ボムあり
+    //1 ボムなし
+
+    //const bombCount = 10;
+    //const
+
+    console.log(x, y);
+    //const bombMap = JSON.parse(JSON.stringify(userInputs));
   };
+
   //-1 ->石
   //0 ->画像なしセル
   //1~8 ->数字セル
@@ -66,14 +64,7 @@ const Home = () => {
               key={`${x}-${y}}`}
               onClick={() => clickCell(x, y)}
               style={{ backgroundPosition: -30 * cell + 30 }}
-            >
-              <div
-                className={styles.stone}
-                key={`${x}-${y}}`}
-                onClick={() => clickCell(x, y)}
-                style={{}}
-              />
-            </div>
+            />
           ))
         )}
       </div>
