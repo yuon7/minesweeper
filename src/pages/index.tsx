@@ -34,7 +34,12 @@ const Home = () => {
   const clickCell = (x: number, y: number) => {
     console.log(x, y);
     const newBombMap = JSON.parse(JSON.stringify(bombMap));
-    for (let count = 1; count < 11; count += 1) {}
+    for (let count = 1; count < 11; count += 1) {
+      if (bombMap[y][x] === 0) {
+        newBombMap[y][x] = 1;
+      }
+    }
+    console.log(newBombMap);
     //以下はボムの場所を決める際のボード
     //0 ボムあり
     //1 ボムなし
