@@ -31,15 +31,29 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  const clickCell = (x: number, y: number) => {
-    console.log(x, y);
-    const newBombMap = JSON.parse(JSON.stringify(bombMap));
-    for (let count = 1; count < 11; count += 1) {
-      if (bombMap[y][x] === 0) {
-        newBombMap[y][x] = 1;
-      }
+
+  const newBombMap = JSON.parse(JSON.stringify(bombMap));
+  const setBombRandom = () => {
+    const a = Math.floor(Math.random() * 9);
+    const b = Math.floor(Math.random() * 9);
+    if (newBombMap[b][a] === 0) {
+      newBombMap[b][a] = 1;
+    } else {
+      setBombRandom();
     }
-    console.log(newBombMap);
+  };
+  const clickCell = (x: number, y: number) => {
+    if (newBombMap.some((row: number[]) => row.includes(1))) {
+      //
+    } else {
+      console.log(x, y);
+      newBombMap[y][x] = 1;
+      for (let count = 1; count < 11; count += 1) {
+        setBombRandom();
+      }
+      newBombMap[y][x] = 0;
+    }
+    setBombMap(newBombMap);
     //以下はボムの場所を決める際のボード
     //0 ボムあり
     //1 ボムなし
@@ -58,7 +72,6 @@ const Home = () => {
   //10 ->石＋旗
   //11 ->ボムセル
   //12 ->赤ボム
-
   return (
     <div className={styles.container}>
       <div className={styles.board}>
@@ -69,7 +82,9 @@ const Home = () => {
               key={`${x}-${y}}`}
               onClick={() => clickCell(x, y)}
               style={{ backgroundPosition: -30 * cell + 30 }}
-            />
+            >
+              {bombMap[y][x]}
+            </div>
           ))
         )}
       </div>
