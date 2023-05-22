@@ -31,9 +31,10 @@
 }
 
 .stone {
+  background-color: rgb(119 119 119);
   width: 30px;
   height: 30px;
-  box-shadow: 0.1px 0.3px 5px 0.1px;
+  border: outset 4px rgb(188 186 186);
 }
 
 .main {

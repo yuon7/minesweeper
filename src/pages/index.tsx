@@ -17,6 +17,18 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const newUserInputs = JSON.parse(JSON.stringify(userInputs));
+  const board: number[][] = [
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+  ];
   const [bombMap, setBombMap] = useState([
     //以下はボムの場所を決める際のボード
     //0 ボムなし
@@ -33,16 +45,33 @@ const Home = () => {
   ]);
 
   const newBombMap = JSON.parse(JSON.stringify(bombMap));
-  const setBombRandom = () => {
-    const a = Math.floor(Math.random() * 9);
-    const b = Math.floor(Math.random() * 9);
-    if (newBombMap[b][a] === 0) {
-      newBombMap[b][a] = 1;
-    } else {
-      setBombRandom();
+  let y_count = -1;
+  let x_count = -1;
+  for (const one_row_bombMap of bombMap) {
+    y_count += 1;
+    console.log('jjjj', y_count);
+    for (const one_bombMap of one_row_bombMap) {
+      x_count += 1;
+      if (one_bombMap === 1) {
+        board[y_count][x_count] = 11;
+      }
     }
-  };
+  }
+  console.table(board);
+
   const clickCell = (x: number, y: number) => {
+    newUserInputs[y][x] = 1;
+    console.table(newUserInputs);
+    setUserInputs(newUserInputs);
+    const setBombRandom = () => {
+      const a = Math.floor(Math.random() * 9);
+      const b = Math.floor(Math.random() * 9);
+      if (newBombMap[b][a] === 0) {
+        newBombMap[b][a] = 1;
+      } else {
+        setBombRandom();
+      }
+    };
     if (newBombMap.some((row: number[]) => row.includes(1))) {
       //
     } else {
@@ -51,8 +80,10 @@ const Home = () => {
       for (let count = 1; count < 11; count += 1) {
         setBombRandom();
       }
+
       newBombMap[y][x] = 0;
     }
+    console.table(newBombMap);
     setBombMap(newBombMap);
     //以下はボムの場所を決める際のボード
     //0 ボムあり
@@ -83,7 +114,8 @@ const Home = () => {
               onClick={() => clickCell(x, y)}
               style={{ backgroundPosition: -30 * cell + 30 }}
             >
-              {bombMap[y][x]}
+              <div className={styles.stone} />
+              {/* {bombMap[y][x]} */}
             </div>
           ))
         )}
