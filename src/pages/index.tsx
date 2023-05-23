@@ -19,6 +19,13 @@ const Home = () => {
   ]);
   const newUserInputs = JSON.parse(JSON.stringify(userInputs));
   const board: number[][] = [
+    //-1 ->石
+    //0 ->空白セル
+    //1~8 ->数字セル
+    //9 ->石＋はてな
+    //10 ->石＋旗
+    //11 ->ボムセル
+    //12 ->赤ボム
     [-1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -44,16 +51,66 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const directionList = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
+  ];
+
+  const checkAround = (x: number, y: number) => {
+    let countBombs = 0;
+    for (const direction of directionList) {
+      if (
+        board[y + direction[0]] !== undefined &&
+        bombMap[y + direction[0]][x + direction[1]] === 1
+      ) {
+        countBombs += 1;
+      }
+    }
+    board[y][x] = countBombs;
+    if (countBombs === 0) {
+      for (const direction of directionList) {
+        if (
+          board[y + direction[0]] !== undefined &&
+          (board[y + direction[0]][x + direction[1]] === -1 ||
+            board[y + direction[0]][x + direction[1]] === 9 ||
+            board[y + direction[0]][x + direction[1]] === 10)
+        ) {
+          checkAround(x + direction[1], y + direction[0]);
+        }
+      }
+    }
+  };
+
   const newBombMap = JSON.parse(JSON.stringify(bombMap));
-  let y_count = -1;
-  let x_count = -1;
+  let y_bomb_count = -1;
   for (const one_row_bombMap of bombMap) {
-    y_count += 1;
-    console.log('jjjj', y_count);
+    y_bomb_count += 1;
+    console.log(y_bomb_count);
+    let x_bomb_count = -1;
     for (const one_bombMap of one_row_bombMap) {
-      x_count += 1;
+      x_bomb_count += 1;
       if (one_bombMap === 1) {
-        board[y_count][x_count] = 11;
+        board[y_bomb_count][x_bomb_count] = 11;
+      }
+    }
+  }
+  let y_user_count = -1;
+  for (const one_row_userInputs of userInputs) {
+    y_user_count = 1;
+    const x_user_count = -1;
+    for (const one_userInputs of one_row_userInputs) {
+      if (one_userInputs === 2) {
+        board[y_user_count][x_user_count] = 9;
+      } else if (one_userInputs === 3) {
+        board[y_user_count][x_user_count] = 10;
+      } else if (one_userInputs === 1) {
+        checkAround;
       }
     }
   }
@@ -96,13 +153,6 @@ const Home = () => {
     //const bombMap = JSON.parse(JSON.stringify(userInputs));
   };
 
-  //-1 ->石
-  //0 ->画像なしセル
-  //1~8 ->数字セル
-  //9 ->石＋はてな
-  //10 ->石＋旗
-  //11 ->ボムセル
-  //12 ->赤ボム
   return (
     <div className={styles.container}>
       <div className={styles.board}>
