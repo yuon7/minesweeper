@@ -17,7 +17,7 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  const newUserInputs = JSON.parse(JSON.stringify(userInputs));
+
   const board: number[][] = [
     //-1 ->石
     //0 ->空白セル
@@ -62,17 +62,19 @@ const Home = () => {
     [1, 1],
   ];
 
-  const checkAround = (x: number, y: number) => {
+  const checkAround = (y: number, x: number) => {
     let countBombs = 0;
     for (const direction of directionList) {
       if (
         board[y + direction[0]] !== undefined &&
+        board[x + direction[1]] !== undefined &&
         bombMap[y + direction[0]][x + direction[1]] === 1
       ) {
         countBombs += 1;
       }
     }
     board[y][x] = countBombs;
+    // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     if (countBombs === 0) {
       for (const direction of directionList) {
         if (
@@ -81,44 +83,44 @@ const Home = () => {
             board[y + direction[0]][x + direction[1]] === 9 ||
             board[y + direction[0]][x + direction[1]] === 10)
         ) {
-          checkAround(x + direction[1], y + direction[0]);
+          checkAround(y + direction[0], x + direction[1]);
         }
       }
     }
   };
 
   const newBombMap = JSON.parse(JSON.stringify(bombMap));
-  let y_bomb_count = -1;
-  for (const one_row_bombMap of bombMap) {
-    y_bomb_count += 1;
-    console.log(y_bomb_count);
-    let x_bomb_count = -1;
-    for (const one_bombMap of one_row_bombMap) {
-      x_bomb_count += 1;
-      if (one_bombMap === 1) {
-        board[y_bomb_count][x_bomb_count] = 11;
-      }
-    }
-  }
+  // let y_bomb_count = -1;
+  // for (const one_row_bombMap of bombMap) {
+  //   y_bomb_count += 1;
+  //   console.log(y_bomb_count);
+  //   let x_bomb_count = -1;
+  //   for (const one_bombMap of one_row_bombMap) {
+  //     x_bomb_count += 1;
+  //     if (one_bombMap === 1) {
+  //       board[y_bomb_count][x_bomb_count] = 11;
+  //     }s
+  //   }
+  // }
+  const newUserInputs = JSON.parse(JSON.stringify(userInputs));
   let y_user_count = -1;
   for (const one_row_userInputs of userInputs) {
-    y_user_count = 1;
-    const x_user_count = -1;
+    y_user_count += 1;
+    let x_user_count = -1;
     for (const one_userInputs of one_row_userInputs) {
+      x_user_count += 1;
       if (one_userInputs === 2) {
         board[y_user_count][x_user_count] = 9;
       } else if (one_userInputs === 3) {
         board[y_user_count][x_user_count] = 10;
       } else if (one_userInputs === 1) {
-        checkAround;
+        checkAround(y_user_count, x_user_count);
       }
     }
   }
-  console.table(board);
 
-  const clickCell = (x: number, y: number) => {
+  const clickCell = (y: number, x: number) => {
     newUserInputs[y][x] = 1;
-    console.table(newUserInputs);
     setUserInputs(newUserInputs);
     const setBombRandom = () => {
       const a = Math.floor(Math.random() * 9);
@@ -133,15 +135,20 @@ const Home = () => {
       //
     } else {
       console.log(x, y);
-      newBombMap[y][x] = 1;
+      for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+          newBombMap[y + i][x + j] = 1;
+        }
+      }
       for (let count = 1; count < 11; count += 1) {
         setBombRandom();
       }
-
-      newBombMap[y][x] = 0;
+      for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+          newBombMap[y + i][x + j] = 0;
+        }
+      }
     }
-    console.table(newBombMap);
-    setBombMap(newBombMap);
     //以下はボムの場所を決める際のボード
     //0 ボムあり
     //1 ボムなし
@@ -149,22 +156,33 @@ const Home = () => {
     //const bombCount = 10;
     //const
 
-    console.log(x, y);
+    // console.log(x, y);
     //const bombMap = JSON.parse(JSON.stringify(userInputs));
+
+    setBombMap(newBombMap);
   };
 
+  console.log('newBombMap');
+  console.table(newBombMap);
+
+  console.log('board');
+  console.table(board);
+
+  console.log('newUserInputs');
+  console.table(newUserInputs);
   return (
     <div className={styles.container}>
+      <div className={styles.containerBorder} />
       <div className={styles.board}>
-        {userInputs.map((row, y) =>
+        {board.map((row, y) =>
           row.map((cell, x) => (
             <div
               className={styles.cell}
               key={`${x}-${y}}`}
-              onClick={() => clickCell(x, y)}
+              onClick={() => clickCell(y, x)}
               style={{ backgroundPosition: -30 * cell + 30 }}
             >
-              <div className={styles.stone} />
+              {cell === -1 && <div className={styles.stone} />}
               {/* {bombMap[y][x]} */}
             </div>
           ))
