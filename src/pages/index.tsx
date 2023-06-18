@@ -102,6 +102,7 @@ const Home = () => {
   //     }s
   //   }
   // }
+
   const newUserInputs = JSON.parse(JSON.stringify(userInputs));
   let y_user_count = -1;
   for (const one_row_userInputs of userInputs) {
@@ -113,39 +114,45 @@ const Home = () => {
         board[y_user_count][x_user_count] = 9;
       } else if (one_userInputs === 3) {
         board[y_user_count][x_user_count] = 10;
-      } else if (one_userInputs === 1) {
+      } else if (one_userInputs === 1 && bombMap[y_user_count][x_user_count] === 0) {
         checkAround(y_user_count, x_user_count);
       }
     }
   }
 
   const clickCell = (y: number, x: number) => {
-    newUserInputs[y][x] = 1;
-    setUserInputs(newUserInputs);
-    const setBombRandom = () => {
-      const a = Math.floor(Math.random() * 9);
-      const b = Math.floor(Math.random() * 9);
-      if (newBombMap[b][a] === 0) {
-        newBombMap[b][a] = 1;
-      } else {
-        setBombRandom();
-      }
-    };
-    if (newBombMap.some((row: number[]) => row.includes(1))) {
-      //
-    } else {
-      console.log(x, y);
-      for (let i = -1; i < 2; i++) {
-        for (let j = -1; j < 2; j++) {
-          newBombMap[y + i][x + j] = 1;
+    if (!bombMap.some((row, y) => row.some((bomb, x) => bomb === 1 && userInputs[y][x] === 1))) {
+      newUserInputs[y][x] = 1;
+      setUserInputs(newUserInputs);
+      const setBombRandom = () => {
+        const a = Math.floor(Math.random() * 9);
+        const b = Math.floor(Math.random() * 9);
+        if (newBombMap[b][a] === 0) {
+          newBombMap[b][a] = 1;
+        } else {
+          setBombRandom();
         }
-      }
-      for (let count = 1; count < 11; count += 1) {
-        setBombRandom();
-      }
-      for (let i = -1; i < 2; i++) {
-        for (let j = -1; j < 2; j++) {
-          newBombMap[y + i][x + j] = 0;
+      };
+      if (newBombMap.some((row: number[]) => row.includes(1))) {
+        //
+      } else {
+        console.log(x, y);
+        for (let i = -1; i < 2; i++) {
+          for (let j = -1; j < 2; j++) {
+            if (newBombMap[y + i] !== undefined) {
+              newBombMap[y + i][x + j] = 1;
+            }
+          }
+        }
+        for (let count = 1; count < 11; count += 1) {
+          setBombRandom();
+        }
+        for (let i = -1; i < 2; i++) {
+          for (let j = -1; j < 2; j++) {
+            if (newBombMap[y + i] !== undefined) {
+              newBombMap[y + i][x + j] = 0;
+            }
+          }
         }
       }
     }
@@ -170,9 +177,31 @@ const Home = () => {
 
   console.log('newUserInputs');
   console.table(newUserInputs);
+  if (bombMap.some((row, y) => row.some((bomb, x) => bomb === 1 && userInputs[y][x] === 1))) {
+    for (let n = 0; n < 9; n++) {
+      for (let m = 0; m < 9; m++) {
+        if (bombMap[n][m] === 1) {
+          board[n][m] = 11;
+          if (userInputs[n][m] === 1) {
+            board[n][m] = 111;
+          }
+        }
+      }
+    }
+  }
   return (
     <div className={styles.container}>
-      <div className={styles.containerBorder} />
+      <div className={styles.containerBorder}>
+        <div
+          className={styles.cell}
+          style={{
+            width: 60,
+            height: 60,
+            backgroundSize: 900,
+            backgroundPosition: game === 0 ? -710 : -773,
+          }}
+        />
+      </div>
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((cell, x) => (
@@ -180,7 +209,10 @@ const Home = () => {
               className={styles.cell}
               key={`${x}-${y}}`}
               onClick={() => clickCell(y, x)}
-              style={{ backgroundPosition: -30 * cell + 30 }}
+              style={{
+                backgroundPosition: -30 * (cell % 100) + 30,
+                backgroundColor: cell === 111 ? '#f00' : '#0000',
+              }}
             >
               {cell === -1 && <div className={styles.stone} />}
               {/* {bombMap[y][x]} */}
