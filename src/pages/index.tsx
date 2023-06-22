@@ -124,6 +124,8 @@ const Home = () => {
     if (!bombMap.some((row, y) => row.some((bomb, x) => bomb === 1 && userInputs[y][x] === 1))) {
       newUserInputs[y][x] = 1;
       setUserInputs(newUserInputs);
+
+      //ボムをランダムに配置する再起関数
       const setBombRandom = () => {
         const a = Math.floor(Math.random() * 9);
         const b = Math.floor(Math.random() * 9);
@@ -189,17 +191,38 @@ const Home = () => {
       }
     }
   }
+
+  const onRightClick = (x: number, y: number) => {
+    switch (userInputs[y][x]) {
+      case 0:
+        newUserInputs[y][x] = 2;
+        board[y][x] = 9;
+        break;
+      case 2:
+        newUserInputs[y][x] = 3;
+        board[y][x] = 10;
+        break;
+      case 3:
+        newUserInputs[y][x] = 0;
+        board[y][x] = -1;
+        break;
+    }
+    setUserInputs(newUserInputs);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.containerBorder}>
         <div
           className={styles.cell}
-          style={{
-            width: 60,
-            height: 60,
-            backgroundSize: 900,
-            backgroundPosition: game === 0 ? -710 : -773,
-          }}
+          style={
+            {
+              // width: 60,
+              // height: 60,
+              // backgroundSize: 900,
+              // backgroundPosition: game === 0 ? -710 : -773,
+            }
+          }
         />
       </div>
       <div className={styles.board}>
@@ -214,7 +237,15 @@ const Home = () => {
                 backgroundColor: cell === 111 ? '#f00' : '#0000',
               }}
             >
-              {cell === -1 && <div className={styles.stone} />}
+              {cell === -1 && (
+                <div
+                  className={styles.stone}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    onRightClick(x, y);
+                  }}
+                />
+              )}
               {/* {bombMap[y][x]} */}
             </div>
           ))
