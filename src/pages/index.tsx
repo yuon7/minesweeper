@@ -232,20 +232,16 @@ const Home = () => {
               className={styles.cell}
               key={`${x}-${y}}`}
               onClick={() => clickCell(y, x)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                onRightClick(x, y);
+              }}
               style={{
                 backgroundPosition: -30 * (cell % 100) + 30,
                 backgroundColor: cell === 111 ? '#f00' : '#0000',
               }}
             >
-              {cell === -1 && (
-                <div
-                  className={styles.stone}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    onRightClick(x, y);
-                  }}
-                />
-              )}
+              {cell === -1 && <div className={styles.stone} />}
               {/* {bombMap[y][x]} */}
             </div>
           ))
