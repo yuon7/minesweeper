@@ -1,251 +1,282 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './index.module.css';
 const Home = () => {
-  //cellの下地参照ボード
-  const [userInputs, setUserInputs] = useState<(0 | 1 | 2 | 3)[][]>([
-    //0 未クリック
-    //1 左クリック
-    //2 はてな
-    //3 旗
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
+  const [grade, setGrade] = useState([10, 8, 8]); //ボムの数・縦・横
+  const [isStop, setIsStop] = useState(true);
+  const [timer, setTimer] = useState(0);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [userInputs, setUserInputs] = useState<(0 | 1 | 2 | 3)[][]>(
+    // 0 -> 未クリック
+    // 1 -> 左クリック
+    // 2 -> はてな
+    // 3 -> 旗
+    [...Array(grade[2])].map(() => [...Array(grade[1])].map(() => 0))
+  );
 
-  const board: number[][] = [
-    //-1 ->石
-    //0 ->空白セル
-    //1~8 ->数字セル
-    //9 ->石＋はてな
-    //10 ->石＋旗
-    //11 ->ボムセル
-    //12 ->赤ボム
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  ];
-  const [bombMap, setBombMap] = useState([
-    //以下はボムの場所を決める際のボード
-    //0 ボムなし
-    //1 ボムあり
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
+  const [bombMap, setBombMap] = useState(
+    //-1  -> ボム無し
+    // 10 -> ボム有り
+    [...Array(grade[2])].map(() => [...Array(grade[1])].map(() => -1))
+  );
 
   const directionList = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
-    [-1, -1],
     [1, -1],
-    [-1, 1],
+    [1, 0],
     [1, 1],
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
   ];
 
-  const checkAround = (y: number, x: number) => {
-    let countBombs = 0;
-    for (const direction of directionList) {
-      if (
-        board[y + direction[0]] !== undefined &&
-        board[x + direction[1]] !== undefined &&
-        bombMap[y + direction[0]][x + direction[1]] === 1
-      ) {
-        countBombs += 1;
-      }
+  const defaultBombs = [...Array(grade[2]).map(() => [...Array(grade[1])].map(() => -1))];
+  const defaultUserInputs: 0[][] = [...Array(grade[2])].map(() =>
+    [...Array(grade[1])].map(() => 0)
+  );
+
+  useEffect(() => {
+    if (isStop) {
+      return;
     }
-    board[y][x] = countBombs;
-    // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-    if (countBombs === 0) {
-      for (const direction of directionList) {
-        if (
-          board[y + direction[0]] !== undefined &&
-          (board[y + direction[0]][x + direction[1]] === -1 ||
-            board[y + direction[0]][x + direction[1]] === 9 ||
-            board[y + direction[0]][x + direction[1]] === 10)
-        ) {
-          checkAround(y + direction[0], x + direction[1]);
-        }
-      }
+    const timerId = setInterval(() => {
+      setTimer((c) => c + 1);
+    }, 1000);
+    return () => {
+      clearInterval(timerId);
+    };
+  }, [isStop]);
+  // useEffectは発火元->実行したいことをセットで考えよう。
+
+  const checkCoordinate = (X: number, Y: number) => {
+    if (X < 0 || X >= grade[1] || Y < 0 || Y >= grade[2]) {
+      return true; //縦と横のながさにブーリアン
     }
+    return false;
   };
 
-  const newBombMap = JSON.parse(JSON.stringify(bombMap));
-  // let y_bomb_count = -1;
-  // for (const one_row_bombMap of bombMap) {
-  //   y_bomb_count += 1;
-  //   console.log(y_bomb_count);
-  //   let x_bomb_count = -1;
-  //   for (const one_bombMap of one_row_bombMap) {
-  //     x_bomb_count += 1;
-  //     if (one_bombMap === 1) {
-  //       board[y_bomb_count][x_bomb_count] = 11;
-  //     }s
-  //   }
-  // }
+  const checkAround = (board: number[][]) => {
+    [...Array(grade[1])].map((_, x) => {
+      [...Array(grade[2])].map((_, y) => {
+        directionList.map(([a, b]) => {
+          const X = a + x;
+          const Y = b + y;
+          if (!checkCoordinate(X, Y) && board[y][x] === 10 && board[Y][X] !== 10) {
+            board[Y][X] += 1;
+          }
+        });
+      });
+    });
+    setBombMap(board);
+  };
 
-  const newUserInputs = JSON.parse(JSON.stringify(userInputs));
-  let y_user_count = -1;
-  for (const one_row_userInputs of userInputs) {
-    y_user_count += 1;
-    let x_user_count = -1;
-    for (const one_userInputs of one_row_userInputs) {
-      x_user_count += 1;
-      if (one_userInputs === 2) {
-        board[y_user_count][x_user_count] = 9;
-      } else if (one_userInputs === 3) {
-        board[y_user_count][x_user_count] = 10;
-      } else if (one_userInputs === 1 && bombMap[y_user_count][x_user_count] === 0) {
-        checkAround(y_user_count, x_user_count);
+  const buryBombs = (x: number, y: number, board: number[][]) => {
+    const burying = () => {
+      if (board.flat().filter((number) => number === 10).length >= grade[0]) {
+        setBombMap(board);
+        return;
       }
-    }
-  }
-
-  const clickCell = (y: number, x: number) => {
-    if (!bombMap.some((row, y) => row.some((bomb, x) => bomb === 1 && userInputs[y][x] === 1))) {
-      newUserInputs[y][x] = 1;
-      setUserInputs(newUserInputs);
-
-      //ボムをランダムに配置する再起関数
-      const setBombRandom = () => {
-        const a = Math.floor(Math.random() * 9);
-        const b = Math.floor(Math.random() * 9);
-        if (newBombMap[b][a] === 0) {
-          newBombMap[b][a] = 1;
-        } else {
-          setBombRandom();
-        }
-      };
-      if (newBombMap.some((row: number[]) => row.includes(1))) {
-        //
+      const Y = Math.floor(Math.random() * grade[2]);
+      const X = Math.floor(Math.random() * grade[1]);
+      if (Y === y && X === x) {
+        board[Y][X] = -1;
       } else {
-        console.log(x, y);
-        for (let i = -1; i < 2; i++) {
-          for (let j = -1; j < 2; j++) {
-            if (newBombMap[y + i] !== undefined) {
-              newBombMap[y + i][x + j] = 1;
-            }
-          }
-        }
-        for (let count = 1; count < 11; count += 1) {
-          setBombRandom();
-        }
-        for (let i = -1; i < 2; i++) {
-          for (let j = -1; j < 2; j++) {
-            if (newBombMap[y + i] !== undefined) {
-              newBombMap[y + i][x + j] = 0;
-            }
-          }
-        }
+        board[Y][X] = 10;
       }
-    }
-    //以下はボムの場所を決める際のボード
-    //0 ボムあり
-    //1 ボムなし
-
-    //const bombCount = 10;
-    //const
-
-    // console.log(x, y);
-    //const bombMap = JSON.parse(JSON.stringify(userInputs));
-
-    setBombMap(newBombMap);
+      burying();
+    };
+    burying();
   };
 
-  console.log('newBombMap');
-  console.table(newBombMap);
+  const flagCount = grade[0] - userInputs.flat().filter((number) => number === 3).length;
 
-  console.log('board');
-  console.table(board);
+  const isGameClear: boolean =
+    userInputs.flat().filter((number) => number === 0).length +
+      userInputs.flat().filter((number) => number === 3).length ===
+    grade[0];
 
-  console.log('newUserInputs');
-  console.table(newUserInputs);
-  if (bombMap.some((row, y) => row.some((bomb, x) => bomb === 1 && userInputs[y][x] === 1))) {
-    for (let n = 0; n < 9; n++) {
-      for (let m = 0; m < 9; m++) {
-        if (bombMap[n][m] === 1) {
-          board[n][m] = 11;
-          if (userInputs[n][m] === 1) {
-            board[n][m] = 111;
-          }
-        }
+  const onClick = (x: number, y: number) => {
+    const newUserInputs = structuredClone(userInputs);
+    const newBombMap = structuredClone(bombMap);
+
+    const fillCell = (x: number, y: number) => {
+      if (newUserInputs[y][x] === 0) {
+        newUserInputs[y][x] = 1;
       }
-    }
-  }
+      if (newBombMap[y][x] === -1) {
+        newBombMap[y][x] = -2;
+        directionList.map(([a, b]) => {
+          const X = a + x;
+          const Y = b + y;
+          if (!checkCoordinate(X, Y)) {
+            fillCell(X, Y);
+          }
+        });
+      }
+    };
 
-  const onRightClick = (x: number, y: number) => {
-    switch (userInputs[y][x]) {
-      case 0:
-        newUserInputs[y][x] = 2;
-        board[y][x] = 9;
-        break;
-      case 2:
-        newUserInputs[y][x] = 3;
-        board[y][x] = 10;
-        break;
-      case 3:
-        newUserInputs[y][x] = 0;
-        board[y][x] = -1;
-        break;
+    const endGame = () => {
+      bombMap.map((row, y) => {
+        row.map((number, x) => {
+          if (number === 10) {
+            newUserInputs[y][x] = 1;
+            setUserInputs(newUserInputs);
+          }
+        });
+      });
+    };
+
+    // ここからゲーム開始
+    if (bombMap.flat().filter((number) => number === 10).length === 0) {
+      buryBombs(x, y, newBombMap);
+      checkAround(newBombMap);
+      setIsStop(false);
+    }
+    // gameOver
+    if (
+      (newBombMap[y][x] === 10 && !isGameClear && newUserInputs[y][x] === 0) ||
+      newUserInputs[y][x] === 1
+    ) {
+      endGame();
+      setIsStop(true);
+      setIsGameOver(true);
+      newBombMap[y][x] += 1;
+      setBombMap(newBombMap);
+    }
+    //普通のクリック時の挙動
+    if ((!isGameClear && !isGameOver && newUserInputs[y][x] === 0) || newUserInputs[y][x] === 1) {
+      fillCell(x, y);
     }
     setUserInputs(newUserInputs);
+    setBombMap(newBombMap);
+  };
+  const onContextMenu = (x: number, y: number, event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const newUserInputs = structuredClone(userInputs);
+    const num = newUserInputs[y][x];
+    if (num === 0 && !isGameClear && !isGameOver) {
+      newUserInputs[y][x] = 3; //旗がおいてなければ置く
+    } else if (num === 3) {
+      newUserInputs[y][x] = 0; //置いてあれば外す
+    }
+    setUserInputs(newUserInputs);
+  };
+  useEffect(() => {
+    setIsStop(true);
+  }, [isGameClear]);
+
+  const reloading = () => {
+    setBombMap(defaultBombs);
+    setUserInputs(defaultUserInputs);
+    setIsStop(true);
+    setTimer(0);
+    setIsGameOver(false);
+  };
+  const normal = () => {
+    setGrade([10, 9, 9]);
+    setIsStop(true);
+    setTimer(0);
+    reloading();
+  };
+  const hard = () => {
+    setGrade([40, 16, 16]);
+    setIsStop(true);
+    setTimer(0);
+    reloading();
+  };
+  const expert = () => {
+    setGrade([99, 30, 16]);
+    setIsStop(true);
+    setTimer(0);
+    reloading();
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.containerBorder}>
-        <div
-          className={styles.cell}
-          style={
-            {
-              // width: 60,
-              // height: 60,
-              // backgroundSize: 900,
-              // backgroundPosition: game === 0 ? -710 : -773,
-            }
-          }
-        />
+      <div className={styles.levels}>
+        <div className={styles.level}>
+          <button onClick={normal}>初級</button>
+        </div>
+        <div className={styles.level}>
+          <button onClick={hard}>中級</button>
+        </div>
+        <div className={styles.level}>
+          <button onClick={expert}>上級</button>
+        </div>
       </div>
-      <div className={styles.board}>
-        {board.map((row, y) =>
-          row.map((cell, x) => (
-            <div
-              className={styles.cell}
-              key={`${x}-${y}}`}
-              onClick={() => clickCell(y, x)}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                onRightClick(x, y);
-              }}
-              style={{
-                backgroundPosition: -30 * (cell % 100) + 30,
-                backgroundColor: cell === 111 ? '#f00' : '#0000',
-              }}
-            >
-              {cell === -1 && <div className={styles.stone} />}
-              {/* {bombMap[y][x]} */}
-            </div>
-          ))
-        )}
+      <div
+        className={styles.board}
+        style={{
+          width: `${grade[1] >= 9 ? 70 + 35.8 * grade[1] : 356.4}px`,
+          height: `${200 + 35.8 * grade[2]}px`,
+        }}
+      >
+        <div
+          className={styles.top}
+          style={{
+            width: `${grade[1] >= 9 ? 35.8 * grade[1] : 296.4}px`,
+          }}
+        >
+          <div className={styles.count}>{String(flagCount).padStart(3, '0')}</div>
+          <div
+            className={styles.face}
+            style={{
+              backgroundPosition: `${isGameOver ? -520 : isGameClear ? -480 : -440}px 0px`,
+            }}
+            onClick={() => reloading()}
+          />
+          <div className={styles.timer}>{String(timer).padStart(3, '0')}</div>
+        </div>
+        <div
+          className={styles.game}
+          style={{
+            width: `${35.4 * grade[1] + 10}px`,
+            height: `${35.4 * grade[2] + 10}px`,
+          }}
+        >
+          <div
+            className={styles.boards}
+            style={{
+              width: `${35 * grade[1]}px`,
+              height: `${35 * grade[2]}px`,
+            }}
+          >
+            {userInputs.map((row, y) =>
+              row.map((number, x) => (
+                <div
+                  className={styles.num}
+                  style={{
+                    backgroundPosition: `${
+                      bombMap[y][x] === 11 ? -297 : -29.8 * bombMap[y][x]
+                    }px 1.7px`,
+                    backgroundColor: `${{ 0: '#c6c6c6', 12: 'red' }[bombMap[y][x] + 1]}`,
+                  }}
+                  key={`${x}-${y}`}
+                >
+                  <div
+                    className={styles.tile}
+                    style={{
+                      border: [undefined, '0px'][number],
+                      background: ['#c6c6c6', 'transparent'][number],
+                    }}
+                    key={`${x}-${y}`}
+                    onClick={() => onClick(x, y)}
+                    onContextMenu={(event) => onContextMenu(x, y, event)}
+                  >
+                    <div
+                      className={styles.flag}
+                      style={{
+                        backgroundPosition: `${
+                          { 0: 30, 1: 30, 2: -184, 3: -207 }[userInputs[y][x]]
+                        }px 1.5px`,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

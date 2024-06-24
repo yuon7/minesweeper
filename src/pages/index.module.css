@@ -1,172 +1,136 @@
+@import url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.min.css');
+
 .container {
   display: flex;
   flex-direction: column;
-  height: 350px;
-  width: 300px;
-  justify-content: center;
   align-items: center;
-  background-color: #ddd;
-  border-top: 5px solid #fff;
-  border-right: 5px solid #eee;
-  border-left: 5px solid #ccc;
-  border-bottom: 5px solid #bbb;
-}
-
-.container-border {
-  display: flex;
-  height: 280px;
-  width: 280px;
   justify-content: center;
-  align-items: center;
-  background-color: #ddd;
-  border-bottom: 5px solid #fff;
-  border-left: 5px solid #eee;
-  border-right: 5px solid #ccc;
-  border-top: 5px solid #bbb;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 0 0.5rem;
 }
 
 .board {
   display: flex;
   flex-wrap: wrap;
-  width: 270px;
-  height: 270px;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  height: 500px;
+  background-color: #c6c6c6;
+  border: outset 10px rgb(220 220 220);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 333px;
+  height: 79px;
+  border: inset 8px white;
+}
+
+.num{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  background: url('https://raw.githubusercontent.com/Ringo37/minesweeper/main/src/assets/images/icons.png')
+    no-repeat;
+  background-color: #c6c6c6;
+  border: solid 1.5px #898989;
+}
+
+.game {
+  width: 331px;
+  height: 331px;
+  border: inset 8px white;
+}
+
+.boards {
+  display: flex;
+  flex-wrap: wrap;
+  width: 315px;
+  height: 315px;
   background-color: #c6c6c6;
 }
 
-.picture {
-  width: 30px;
-  height: 30px;
-  background: url('~/assets/images/icons.png');
-}
-
-.cell {
-  display: flex;
-  width: 30px;
-  height: 30px;
-  justify-content: center;
-  align-items: center;
-  border: solid 1px #919191;
-  background: url('~/assets/images/icons.png') no-repeat;
-  background-position: -60px;
-}
-
-.stone {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  background-color: #ddd;
-  border-top: 5px solid #fff;
-  border-right: 5px solid #eee;
-  border-left: 5px solid #ccc;
-  border-bottom: 5px solid #bbb;
-}
-
-.main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5rem 0;
-}
-
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100px;
-  border-top: 1px solid #eaeaea;
-}
-
-.footer > a {
-  display: flex;
-  flex-grow: 1;
-  align-items: center;
-  justify-content: center;
-}
-
-.title {
-  margin: 0;
-  font-size: 4rem;
-  line-height: 1.15;
-  text-align: center;
-}
-
-.title > a {
-  color: #0070f3;
-  text-decoration: none;
-}
-
-.title > a:hover,
-.title > a:focus,
-.title > a:active {
-  text-decoration: underline;
-}
-
-.description {
-  font-size: 1.5rem;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.code {
-  padding: 0.75rem;
-  font-family: Menlo, 'Monaco, Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono',
-    'Bitstream Vera Sans Mono', 'Courier New', monospace;
-  font-size: 1.1rem;
-  border-radius: 5px;
-}
-
-.grid {
+.tile{
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  max-width: 800px;
-  margin-top: 3rem;
+  width: 35px;
+  height: 35px;
+  background-color: #c6c6c6;
+  border: outset 5px white;
 }
 
-@media (width <= 600px) {
-  .grid {
-    flex-direction: column;
-    width: 100%;
-  }
+.flag {
+  display: flex;
+  width: 25px;
+  height: 25px;
+  background: url('https://raw.githubusercontent.com/Ringo37/minesweeper/main/src/assets/images/icons.png')
+    no-repeat;
+  background-size: 325px;
 }
 
-.card {
-  width: 45%;
-  padding: 1.5rem;
-  margin: 1rem;
-  color: inherit;
-  text-align: left;
-  text-decoration: none;
-  border: 1px solid #eaeaea;
-  border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+.face {
+  display: flex;
+  width: 50px;
+  height: 50px;
+  background: url('https://raw.githubusercontent.com/Ringo37/minesweeper/main/src/assets/images/icons.png')
+    no-repeat;
+  background-size: 560px;
+  border: outset 5px white;
 }
 
-.card:hover,
-.card:focus,
-.card:active {
-  color: #0070f3;
-  border-color: #0070f3;
+.face:active {
+  border: outset 5px #898989;
 }
 
-.card > h2 {
-  margin: 0 0 1rem;
-  font-size: 1.5rem;
+.count {
+  display: grid;
+  place-items: center;
+  width: 85px;
+  height: 50px;
+  font-family: 'DSEG7-Classic-MINI', sans-serif;
+  font-size: 29px;
+  font-weight: bold;
+  color: red;
+  letter-spacing: 0;
+  background-color: black;
+  border: inset 5px white;
 }
 
-.card > p {
-  margin: 0;
-  font-size: 1.25rem;
-  line-height: 1.5;
+.timer {
+  display: grid;
+  place-items: center;
+  width: 85px;
+  height: 50px;
+  font-family: 'DSEG7-Classic-MINI', sans-serif;
+  font-size: 29px;
+  font-weight: bold;
+  color: red;
+  letter-spacing: 0;
+  background-color: black;
+  border: inset 5px white;
 }
 
-.logo {
-  height: 1em;
-  margin-left: 0.5rem;
+.level {
+  display: flex;
+  width: 80px;
+  height: 30px;
+  border: 5px black;
+}
+
+.levels{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 900px;
+  height:30px;
+  margin-bottom: 5px;
 }
