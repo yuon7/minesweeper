@@ -12,7 +12,7 @@
   border-bottom: 5px solid #bbb;
 }
 
-.containerBorder {
+.container-border {
   display: flex;
   height: 280px;
   width: 280px;
@@ -30,7 +30,7 @@
   flex-wrap: wrap;
   width: 270px;
   height: 270px;
-  background-color: rgb(136 136 136);
+  background-color: #c6c6c6;
 }
 
 .picture {
@@ -45,7 +45,7 @@
   height: 30px;
   justify-content: center;
   align-items: center;
-  border: solid 1px rgb(85 85 85);
+  border: solid 1px #919191;
   background: url('~/assets/images/icons.png') no-repeat;
   background-position: -60px;
 }
