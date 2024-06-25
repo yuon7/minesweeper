@@ -100,9 +100,8 @@ const Home = () => {
     const newBombMap = structuredClone(bombMap);
 
     const fillCell = (x: number, y: number) => {
-      if (newUserInputs[y][x] === 0) {
-        newUserInputs[y][x] = 1;
-      }
+      if (newUserInputs[y][x] !== 0) return;
+      newUserInputs[y][x] = 1;
       if (newBombMap[y][x] === -1) {
         newBombMap[y][x] = -2;
         directionList.map(([a, b]) => {
@@ -120,36 +119,37 @@ const Home = () => {
         row.map((number, x) => {
           if (number === 10) {
             newUserInputs[y][x] = 1;
-            setUserInputs(newUserInputs);
           }
         });
       });
+      setUserInputs(newUserInputs);
+      setIsStop(true);
+      setIsGameOver(true);
     };
 
-    // ここからゲーム開始
     if (bombMap.flat().filter((number) => number === 10).length === 0) {
       buryBombs(x, y, newBombMap);
       checkAround(newBombMap);
       setIsStop(false);
     }
-    // gameOver
+
     if (
-      (newBombMap[y][x] === 10 && !isGameClear && newUserInputs[y][x] === 0) ||
-      newUserInputs[y][x] === 1
+      newBombMap[y][x] === 10 &&
+      !isGameClear &&
+      (newUserInputs[y][x] === 0 || newUserInputs[y][x] === 1)
     ) {
       endGame();
-      setIsStop(true);
-      setIsGameOver(true);
       newBombMap[y][x] += 1;
       setBombMap(newBombMap);
     }
-    //普通のクリック時の挙動
-    if ((!isGameClear && !isGameOver && newUserInputs[y][x] === 0) || newUserInputs[y][x] === 1) {
+
+    if (!isGameClear && !isGameOver && (newUserInputs[y][x] === 0 || newUserInputs[y][x] === 1)) {
       fillCell(x, y);
     }
     setUserInputs(newUserInputs);
     setBombMap(newBombMap);
   };
+
   const onContextMenu = (x: number, y: number, event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     const newUserInputs = structuredClone(userInputs);
