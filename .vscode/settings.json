@@ -7,13 +7,8 @@
     "source.fixAll.stylelint": "explicit"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.referencesCodeLens.enabled": true,
   "files.eol": "\n",
   "editor.tabSize": 2,
-  "prettier.prettierPath": "node_modules/prettier",
-  "stylelint.validate": ["css", "less", "postcss"],
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  },
-  "python.formatting.provider": "none"
+  "stylelint.validate": ["css"]
 }
