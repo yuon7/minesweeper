@@ -14,8 +14,6 @@ const Home = () => {
   );
 
   const [bombMap, setBombMap] = useState(
-    //-1  -> ボム無し
-    // 10 -> ボム有り
     [...Array(grade[2])].map(() => [...Array(grade[1])].map(() => -1))
   );
 
@@ -217,7 +215,7 @@ const Home = () => {
             width: `${grade[1] >= 9 ? 35.8 * grade[1] : 296.4}px`,
           }}
         >
-          <div className={styles.count}>{String(flagCount).padStart(3, '0')}</div>
+          <div className={styles.flagCount}>{String(flagCount).padStart(3, '0')}</div>
           <div
             className={styles.face}
             style={{
@@ -235,7 +233,7 @@ const Home = () => {
           }}
         >
           <div
-            className={styles.boards}
+            className={styles.boardStyle}
             style={{
               width: `${35 * grade[1]}px`,
               height: `${35 * grade[2]}px`,

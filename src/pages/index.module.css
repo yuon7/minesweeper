@@ -48,7 +48,7 @@
   border: inset 8px white;
 }
 
-.boards {
+.boardStyle {
   display: flex;
   flex-wrap: wrap;
   width: 315px;
@@ -90,7 +90,7 @@
   border: outset 5px #898989;
 }
 
-.count {
+.flagCount {
   display: grid;
   place-items: center;
   width: 85px;
